@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 
 final class MyFile {
-    static boolean used = false;
     static File myFile = new File("myFile.txt");
 
     static void writeToFile (String product) {

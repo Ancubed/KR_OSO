@@ -7,6 +7,6 @@ class StartApplication {
 //        firstM.start();
 //        secondM.start();
 //        firstC.start();
-        new Manager().start();
+        new MainWindow();
     }
 }
