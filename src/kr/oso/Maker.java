@@ -17,7 +17,6 @@ class Maker extends Thread {
     }
 
     private String getProduct() {
-
         return this.products[(int)Math.floor(Math.random() * this.products.length)];
     }
 
