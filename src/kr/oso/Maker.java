@@ -8,8 +8,8 @@ class Maker extends Thread {
     private boolean work;
 
     Maker (String name, int number, float k) {
-        this.products = new String[] {"Acer", "Dell", "Asus", "Mac"};
         setName(name);
+        this.products = new String[] {"Acer", "Dell", "Asus", "Mac"};
         this.number = number + 1;
         this.timeK = k;
         this.records = 0;
