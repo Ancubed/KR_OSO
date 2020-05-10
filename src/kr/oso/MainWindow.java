@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 
 public class MainWindow extends JFrame {
     private static Font font;
@@ -15,6 +16,7 @@ public class MainWindow extends JFrame {
     private JMenu menuFile;
     private JMenuItem menuRun;
     private JMenuItem menuStop;
+    private JMenuItem menuResume;
     private JMenuItem menuExit;
 
     private static JLabel makersHeader;
@@ -26,6 +28,9 @@ public class MainWindow extends JFrame {
 
     private static JList<String> jListConsumers;
     private static String[] consumersNames;
+
+    private static JList<String> jListFileContent;
+    private static String[] fileContent;
 
     private Manager man;
 
@@ -53,6 +58,7 @@ public class MainWindow extends JFrame {
         this.menuFile = new JMenu("File");
         this.menuRun = new JMenuItem("Run");
         this.menuStop = new JMenuItem("Stop");
+        this.menuResume = new JMenuItem("Resume");
         this.menuExit = new JMenuItem("Exit");
         consumersHeader = new JLabel("Consumers");
         fileHeader = new JLabel("File content");
@@ -69,8 +75,12 @@ public class MainWindow extends JFrame {
         this.menuFile.setFont(font);
         this.menuRun.setName("Run");
         this.menuRun.setFont(font);
-        this.menuStop.setName("MenuSave");
+        this.menuStop.setName("MenuStop");
         this.menuStop.setFont(font);
+        this.menuStop.setEnabled(false);
+        this.menuResume.setName("MenuResume");
+        this.menuResume.setFont(font);
+        this.menuResume.setEnabled(false);
         this.menuExit.setName("MenuExit");
         this.menuExit.setFont(font);
         /////////////////////////////////markersPanel
@@ -110,6 +120,7 @@ public class MainWindow extends JFrame {
         /////////////////////////////////into MenuFile
         this.menuFile.add(this.menuRun);
         this.menuFile.add(this.menuStop);
+        this.menuFile.add(this.menuResume);
         this.menuFile.addSeparator();
         this.menuFile.add(this.menuExit);
         /////////////////////////////////into MenuBar
@@ -132,12 +143,14 @@ public class MainWindow extends JFrame {
     private void initActionOfComponents() {
         this.menuExit.addActionListener(actionEvent -> System.exit(0));
         this.menuRun.addActionListener(actionEvent -> run());
+        this.menuStop.addActionListener(actionEvent -> pauseAndResume());
+        this.menuResume.addActionListener(actionEvent -> pauseAndResume());
     }
 
     static synchronized void addMakerToWindow() {
         for (int i = 0; i < makersNames.length; i++) {
             Maker maker = Manager.makers.get(i);
-            makersNames[i] = String.format("%s(id %s, пост %d",
+            makersNames[i] = String.format("%s(id %s, пост %d)",
                     maker.getName(), maker.getId(), 0);
         }
         jListMakers = new JList<>(makersNames);
@@ -168,6 +181,19 @@ public class MainWindow extends JFrame {
         consumersPanel.updateUI();
     }
 
+    static synchronized void addFileContentToWindow() {
+        Arrays.fill(fileContent, "null");
+        jListFileContent = new JList<>(fileContent);
+        jListFileContent.setBorder(new EmptyBorder(10,10, 10, 10));
+        jListFileContent.setFixedCellWidth(makersPanel.getWidth());
+        jListFileContent.setFont(font);
+        jListFileContent.setSelectionBackground(Color.white);
+        jListFileContent.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jListFileContent.setAlignmentX(Component.CENTER_ALIGNMENT);
+        fileContentPanel.add(jListFileContent);
+        fileContentPanel.updateUI();
+    }
+
     static synchronized void currentMakerSupply(long id, int records) {
         int needSelectedId = 0;
         for (int i = 0; i < makersNames.length; i++) {
@@ -194,14 +220,50 @@ public class MainWindow extends JFrame {
         jListConsumers.setSelectedIndex(needSelectedId);
     }
 
-    void run() {
+    static void currentFileContent(String product, int productCount) {
+        String tmp = null;
+        for(int i = fileContent.length - 1; i - 1 >= 0; i--) {
+            if (i > productCount - 1) {
+                fileContent[i] = "null";
+            } else {
+                fileContent[i] = fileContent[i - 1];
+            }
+            jListFileContent.setSelectedIndex(i);
+        }
+        MainWindow.fileContent[0] = String.format("товар %s", product);
+        jListFileContent.setSelectedIndex(0);
+    }
+
+    static void currentFileContent(int productCount) {
+        String tmp = null;
+        for(int i = fileContent.length - 1; i >= 0; i--) {
+            if (i + 1 > productCount) {
+                fileContent[i] = "null";
+            }
+            jListFileContent.setSelectedIndex(i);
+        }
+        jListFileContent.setSelectedIndex(0);
+    }
+
+    private void run() {
+        MyFile.clearFile();
         this.menuRun.setEnabled(false);
-        this.man = new Manager();
+        this.menuStop.setEnabled(true);
+        man = new Manager();
         makersNames = new String[this.man.getMakersNumber()];
         consumersNames = new String[this.man.getConsumersNumber()];
-        this.man.start();
+        fileContent = new String[this.man.getFileSize()];
+        man.start();
     }
-    void stop() {
 
+    private void pauseAndResume() {
+        for (int i = 0; i < Manager.makers.size(); i++) {
+            Manager.makers.get(i).interrupt();
+        }
+        for (int i = 0; i < Manager.consumers.size(); i++) {
+            Manager.consumers.get(i).interrupt();
+        }
+        this.menuResume.setEnabled(!this.menuResume.isEnabled());
+        this.menuStop.setEnabled(!this.menuStop.isEnabled());
     }
 }

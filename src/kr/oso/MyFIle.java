@@ -10,6 +10,13 @@ import java.util.Arrays;
 final class MyFile {
     static File myFile = new File("myFile.txt");
 
+    static void clearFile () {
+        try (FileWriter writer = new FileWriter(myFile, false)) {
+                writer.write("");
+        } catch (IOException e) {
+            System.out.printf("An exception occurs %s", e.getMessage());
+        }
+    }
     static void writeToFile (String product) {
         try (FileWriter writer = new FileWriter(myFile, true)) {
             if (product.matches("\\S+")) {
@@ -32,7 +39,7 @@ final class MyFile {
         }
     }
 
-    static String readFromFile () {
+    static synchronized String readFromFile () {
         try {
             String[] dataFile = readFileAsString(myFile.getPath()).trim().split("\\s+");
             writeToFile(Arrays.copyOfRange(dataFile, 1, dataFile.length));

@@ -19,6 +19,10 @@ class Manager extends Thread {
         return this.consumersNumber;
     }
 
+    int getFileSize() {
+        return this.s;
+    }
+
     Manager (int n, int m, float k, float l, int s) {
         this.makersNumber = n;
         this.consumersNumber = m;
@@ -28,7 +32,7 @@ class Manager extends Thread {
     }
 
     Manager () {
-        this.makersNumber = 3;
+        this.makersNumber = 7;
         this.consumersNumber = 5;
         this.k = 1.0f;
         this.l = 1.2f;
@@ -42,6 +46,7 @@ class Manager extends Thread {
         } catch (InterruptedException e){
             System.out.println("Exception in func run(Manager)");
         }
+        MainWindow.addFileContentToWindow();
         for (int i = 0; i < this.makersNumber; i++) {
             Maker newMaker = new Maker("Maker-" + (i + 1), i, this.k);
             makers.add(newMaker);
