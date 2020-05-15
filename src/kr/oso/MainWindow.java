@@ -2,8 +2,11 @@ package kr.oso;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.MaskFormatter;
+import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
 public class MainWindow extends JFrame {
@@ -12,16 +15,26 @@ public class MainWindow extends JFrame {
     private static final JPanel makersPanel = new JPanel();
     private static final JPanel fileContentPanel = new JPanel();
     private static final JPanel consumersPanel = new JPanel();
-    private JMenuBar menuBar;
-    private JMenu menuFile;
-    private JMenuItem menuRun;
-    private JMenuItem menuStop;
-    private JMenuItem menuResume;
-    private JMenuItem menuExit;
 
-    private static JLabel makersHeader;
-    private static JLabel fileHeader;
-    private static JLabel consumersHeader;
+    private final JPanel makersPanelToCreate = new JPanel();
+    private final JTextField makersCountTextField = new JTextField();
+    private final JTextField makersTimeTextField = new JTextField();
+    private final JPanel fileContentPanelToCreate = new JPanel();
+    private final JTextField fileContentCountTextField = new JTextField();
+    private final JPanel consumersPanelToCreate = new JPanel();
+    private final JTextField consumersCountTextField = new JTextField();
+    private final JTextField consumersTimeTextField = new JTextField();
+
+    private final JMenuBar menuBar = new JMenuBar();
+    private final JMenu menuFile = new JMenu("File");
+    private final JMenuItem menuRun = new JMenuItem("Run");
+    private final JMenuItem menuStop = new JMenuItem("Stop");
+    private final JMenuItem menuResume = new JMenuItem("Resume");
+    private final JMenuItem menuExit = new JMenuItem("Exit");
+
+    private static final JLabel makersHeader = new JLabel("Consumers");
+    private static final JLabel fileHeader = new JLabel("File content");
+    private static final JLabel consumersHeader = new JLabel("Makers");
 
     private static JList<String> jListMakers;
     private static String[] makersNames;
@@ -32,37 +45,22 @@ public class MainWindow extends JFrame {
     private static JList<String> jListFileContent;
     private static String[] fileContent;
 
-    private Manager man;
-
     public MainWindow() {
         super("Производитель / потребитель");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(960, 600);
-        setMaximumSize(new Dimension(960, 650));
         setMinimumSize(new Dimension(960, 600));
+        setMaximumSize(new Dimension(1000, 650));
         setLocationRelativeTo(null);
 
         font = new Font("Courier", Font.ITALIC, 18);
         headerFont = new Font("Courier", Font.BOLD, 23);
 
-        initComponents();
         setPropertiesToComponents();
         constructionOfHierarchy();
         initActionOfComponents();
 
         setVisible(true);
-    }
-
-    private void initComponents() {
-        this.menuBar = new JMenuBar();
-        this.menuFile = new JMenu("File");
-        this.menuRun = new JMenuItem("Run");
-        this.menuStop = new JMenuItem("Stop");
-        this.menuResume = new JMenuItem("Resume");
-        this.menuExit = new JMenuItem("Exit");
-        consumersHeader = new JLabel("Consumers");
-        fileHeader = new JLabel("File content");
-        makersHeader = new JLabel("Makers");
     }
 
     private void setPropertiesToComponents() {
@@ -90,6 +88,13 @@ public class MainWindow extends JFrame {
         makersPanel.setLayout(new BoxLayout(
                 makersPanel, BoxLayout.Y_AXIS));
         makersPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        this.makersPanelToCreate.setName("MakersPanelToCreate");
+        this.makersPanelToCreate.setMaximumSize(new Dimension(getWidth()/3,
+                55));
+        this.makersPanelToCreate.setLayout(new BoxLayout(
+                this.makersPanelToCreate, BoxLayout.Y_AXIS));
+        this.makersPanelToCreate.setAlignmentX(Component.CENTER_ALIGNMENT);
         /////////////////////////////////fileContentPanel
         fileContentPanel.setName("FileContentPanel");
         fileContentPanel.setPreferredSize(new Dimension(getWidth()/4,
@@ -98,6 +103,13 @@ public class MainWindow extends JFrame {
                fileContentPanel, BoxLayout.Y_AXIS));
         fileContentPanel.setBackground(Color.lightGray);
         fileContentPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        this.fileContentPanelToCreate.setName("FileContentPanelToCreate");
+        this.fileContentPanelToCreate.setMaximumSize(new Dimension(getWidth()/3,
+                55));
+        this.fileContentPanelToCreate.setLayout(new BoxLayout(
+                this.fileContentPanelToCreate, BoxLayout.Y_AXIS));
+        this.fileContentPanelToCreate.setAlignmentX(Component.CENTER_ALIGNMENT);
         /////////////////////////////////consumersPanel
         consumersPanel.setName("FileContentPanel");
         consumersPanel.setPreferredSize(new Dimension(getWidth()/3,
@@ -105,6 +117,13 @@ public class MainWindow extends JFrame {
         consumersPanel.setLayout(new BoxLayout(
                 consumersPanel, BoxLayout.Y_AXIS));
         consumersPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        this.consumersPanelToCreate.setName("ConsumersContentPanelToCreate");
+        this.consumersPanelToCreate.setMaximumSize(new Dimension(getWidth()/3,
+                55));
+        this.consumersPanelToCreate.setLayout(new BoxLayout(
+                this.consumersPanelToCreate, BoxLayout.Y_AXIS));
+        this.consumersPanelToCreate.setAlignmentX(Component.CENTER_ALIGNMENT);
         /////////////////////////////////consumersHeader
         consumersHeader.setAlignmentX(Component.CENTER_ALIGNMENT);
         consumersHeader.setFont(headerFont);
@@ -114,6 +133,20 @@ public class MainWindow extends JFrame {
         /////////////////////////////////makersHeader
         makersHeader.setAlignmentX(Component.CENTER_ALIGNMENT);
         makersHeader.setFont(headerFont);
+        this.makersCountTextField.setColumns(5);
+        this.makersCountTextField.setToolTipText("Число поставщиков");
+        this.makersCountTextField.setFont(font);
+        this.makersTimeTextField.setColumns(5);
+        this.makersTimeTextField.setToolTipText("Время доступа в буфер");
+        this.makersTimeTextField.setFont(font);
+        this.consumersCountTextField.setColumns(5);
+        this.consumersCountTextField.setToolTipText("Число поставщиков");
+        this.consumersCountTextField.setFont(font);
+        this.consumersTimeTextField.setColumns(5);
+        this.consumersTimeTextField.setToolTipText("Время доступа в буфер");
+        this.consumersTimeTextField.setFont(font);
+        this.fileContentCountTextField.setToolTipText("Размер буфера");
+        this.fileContentCountTextField.setFont(font);
     }
 
     private void constructionOfHierarchy() {
@@ -128,10 +161,17 @@ public class MainWindow extends JFrame {
         /////////////////////////////////set MenuBar
         setJMenuBar(this.menuBar);
         /////////////////////////////////into Panels
+        this.makersPanelToCreate.add(this.makersCountTextField);
+        this.makersPanelToCreate.add(this.makersTimeTextField);
+        makersPanel.add(this.makersPanelToCreate);
         makersPanel.add(makersHeader);
-        makersPanel.add(makersHeader);
-        fileContentPanel.add(fileHeader);
+        this.consumersPanelToCreate.add(this.consumersCountTextField);
+        this.consumersPanelToCreate.add(this.consumersTimeTextField);
+        consumersPanel.add(this.consumersPanelToCreate);
         consumersPanel.add(consumersHeader);
+        this.fileContentPanelToCreate.add(this.fileContentCountTextField);
+        fileContentPanel.add(this.fileContentPanelToCreate);
+        fileContentPanel.add(fileHeader);
         /////////////////////////////////into RootPanel
         getContentPane().setLayout(new FlowLayout());//Layout RootPanel
         getContentPane().setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
@@ -221,7 +261,6 @@ public class MainWindow extends JFrame {
     }
 
     static void currentFileContent(String product, int productCount) {
-        String tmp = null;
         for(int i = fileContent.length - 1; i - 1 >= 0; i--) {
             if (i > productCount - 1) {
                 fileContent[i] = "null";
@@ -235,7 +274,6 @@ public class MainWindow extends JFrame {
     }
 
     static void currentFileContent(int productCount) {
-        String tmp = null;
         for(int i = fileContent.length - 1; i >= 0; i--) {
             if (i + 1 > productCount) {
                 fileContent[i] = "null";
@@ -249,11 +287,27 @@ public class MainWindow extends JFrame {
         MyFile.clearFile();
         this.menuRun.setEnabled(false);
         this.menuStop.setEnabled(true);
-        man = new Manager();
-        makersNames = new String[this.man.getMakersNumber()];
-        consumersNames = new String[this.man.getConsumersNumber()];
-        fileContent = new String[this.man.getFileSize()];
+        String makersCount = this.makersCountTextField.getText();
+        String consumersCount = this.consumersCountTextField.getText();
+        String fileContentCount = this.fileContentCountTextField.getText();
+        String makersTime = this.makersTimeTextField.getText();
+        String consumersTime  =this.consumersTimeTextField.getText();
+        Manager man = new Manager();
+        try {
+            man = new Manager(Integer.parseInt(makersCount), Integer.parseInt(consumersCount),
+                    Float.parseFloat(makersTime), Float.parseFloat(consumersTime), Integer.parseInt(fileContentCount));
+        } catch (NumberFormatException e) {
+            getContentPane().setBackground(Color.BLUE);
+        }
+        makersNames = new String[man.getMakersNumber()];
+        consumersNames = new String[man.getConsumersNumber()];
+        fileContent = new String[man.getFileSize()];
         man.start();
+        this.makersCountTextField.setEnabled(false);
+        this.makersTimeTextField.setEnabled(false);
+        this.consumersCountTextField.setEnabled(false);
+        this.consumersTimeTextField.setEnabled(false);
+        this.fileContentCountTextField.setEnabled(false);
     }
 
     private void pauseAndResume() {

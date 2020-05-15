@@ -20,8 +20,9 @@ class Consumer extends Thread {
                 sleep(1);
                 while (this.work) {
                     sleep((long) this.timeL * 1000 * this.number);
-                    this.reads++;
-                    Shop.buy(this.reads);
+                    if (Shop.buy(this.reads)) {
+                        this.reads++;
+                    }
                 }
             } catch (InterruptedException e) {
                 this.work = !this.work;

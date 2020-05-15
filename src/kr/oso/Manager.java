@@ -23,7 +23,7 @@ class Manager extends Thread {
         return this.s;
     }
 
-    Manager (int n, int m, float k, float l, int s) {
+    Manager(int n, int m, float k, float l, int s) {
         this.makersNumber = n;
         this.consumersNumber = m;
         this.k = k;
@@ -31,8 +31,8 @@ class Manager extends Thread {
         this.s = s;
     }
 
-    Manager () {
-        this.makersNumber = 7;
+    Manager() {
+        this.makersNumber = 3;
         this.consumersNumber = 5;
         this.k = 1.0f;
         this.l = 1.2f;
@@ -47,8 +47,11 @@ class Manager extends Thread {
             System.out.println("Exception in func run(Manager)");
         }
         MainWindow.addFileContentToWindow();
+        int priority = 5;
         for (int i = 0; i < this.makersNumber; i++) {
+            if (i % 3 == 0 && priority < 10) priority++;
             Maker newMaker = new Maker("Maker-" + (i + 1), i, this.k);
+            newMaker.setPriority(priority);
             makers.add(newMaker);
         }
         MainWindow.addMakerToWindow();
@@ -56,8 +59,11 @@ class Manager extends Thread {
             makers.get(i).start();
         }
         ////////////////////////////////////////////////
+        priority = 5;
         for (int i = 0; i < this.consumersNumber; i++) {
+            if (i % 2 == 0 && priority < 10) priority++;
             Consumer newConsumer = new Consumer("Consumer-" + (i + 1), i, this.k);
+            newConsumer.setPriority(priority);
             consumers.add(newConsumer);
         }
         MainWindow.addConsumerToWindow();

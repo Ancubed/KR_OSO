@@ -26,8 +26,9 @@ class Maker extends Thread {
                 sleep(1);
                 while (this.work) {
                     sleep((long) this.timeK * 1000 * this.number);
-                    this.records++;
-                    Shop.supply(getProduct(), this.records);
+                    if (Shop.supply(getProduct(), this.records)) {
+                        this.records++;
+                    }
                 }
             } catch (InterruptedException e) {
                 this.work = !this.work;
