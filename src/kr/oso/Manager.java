@@ -61,7 +61,7 @@ class Manager extends Thread {
         ////////////////////////////////////////////////
         priority = 5;
         for (int i = 0; i < this.consumersNumber; i++) {
-            if (i % 2 == 0 && priority < 10) priority++;
+            if (i % 3 == 0 && priority < 10) priority++;
             Consumer newConsumer = new Consumer("Consumer-" + (i + 1), i, this.k);
             newConsumer.setPriority(priority);
             consumers.add(newConsumer);

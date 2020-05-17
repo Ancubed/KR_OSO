@@ -3,7 +3,7 @@ import java.util.concurrent.Semaphore;
 
 class Shop {
     private static int productCount = 0;
-    private static final Semaphore sem = new Semaphore(1, false);
+    private static final Semaphore sem = new Semaphore(1, true);
 
     static synchronized boolean buy(int reads) {
         try {

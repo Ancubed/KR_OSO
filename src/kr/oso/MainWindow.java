@@ -140,7 +140,7 @@ public class MainWindow extends JFrame {
         this.makersTimeTextField.setToolTipText("Время доступа в буфер");
         this.makersTimeTextField.setFont(font);
         this.consumersCountTextField.setColumns(5);
-        this.consumersCountTextField.setToolTipText("Число поставщиков");
+        this.consumersCountTextField.setToolTipText("Число покупателей");
         this.consumersCountTextField.setFont(font);
         this.consumersTimeTextField.setColumns(5);
         this.consumersTimeTextField.setToolTipText("Время доступа в буфер");
